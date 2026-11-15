@@ -19,5 +19,20 @@
     </div>
   </section>
 </main>
+<script>
+  /* Tylko wersja demo na GitHub Pages: strona leży tam w podkatalogu (np. /msi-telekom-2/),
+     a ta strona błędu używa ścieżek od katalogu głównego domeny. Skrypt dopisuje podkatalog
+     do linków, logo i stylów. Na docelowej domenie nic nie robi. */
+  (function () {
+    if (!/\.github\.io$/.test(location.hostname)) return;
+    var base = '/' + location.pathname.split('/')[1] + '/';
+    document.querySelectorAll('a[href^="/"], link[href^="/"]').forEach(function (el) {
+      el.setAttribute('href', base + el.getAttribute('href').slice(1));
+    });
+    document.querySelectorAll('img[src^="/"]').forEach(function (el) {
+      el.setAttribute('src', base + el.getAttribute('src').slice(1));
+    });
+  })();
+</script>
 </body>
 </html>

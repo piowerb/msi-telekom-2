@@ -39,7 +39,7 @@ To decyzja klienta i warto ją zaplanować z wyprzedzeniem:
 
 ## Wersja demo na GitHub Pages
 
-Ścieżki są względne, więc strona działa też pod `uzytkownik.github.io/repozytorium/`. Na GitHub Pages pliki `_headers` i `_redirects` są ignorowane, a strona 404 nie ma stylów (to dotyczy tylko demo).
+Ścieżki są względne, więc strona działa też pod `uzytkownik.github.io/repozytorium/`. Na GitHub Pages pliki `_headers` i `_redirects` są ignorowane (to dotyczy tylko demo). Strona `404.html` ma mały skrypt, który na GitHub Pages dopisuje podkatalog do linków i stylów; na docelowej domenie nic nie robi.
 
 ## Do weryfikacji przez klienta
 
@@ -47,6 +47,7 @@ To decyzja klienta i warto ją zaplanować z wyprzedzeniem:
 - Adresy e-mail opiekunów Klienta pochodzą z treści starej strony kontakt. Na starej stronie linki przy tych adresach prowadziły do innej skrzynki, więc warto potwierdzić, które adresy są aktualne.
 - Logotypy referencji pochodzą z dotychczasowej strony. Warto potwierdzić z klientem, że wszystkie firmy nadal zgadzają się na ich publikację.
 - Polityka prywatności nie wspomina o mapie Google ani o formularzu kontaktowym.
+- W polityce prywatności podmienione zostały nieaktualne linki (GIODO, Internet Explorer, stare strony pomocy przeglądarek). Sam tekst jest bez zmian, więc nadal powołuje się na ustawę Prawo telekomunikacyjne, którą zastąpiła ustawa Prawo komunikacji elektronicznej. Warto, żeby klient zaktualizował ten fragment.
 
 ## Dwie wersje kolorystyczne
 
