@@ -1,5 +1,7 @@
 # Cloudflare Pages: przekierowania starych adresów (301 = na stałe).
 # Podstrony mają te same adresy co stara strona, więc tu są tylko wyjątki.
+# Układ linii: stary adres, nowy adres, kod przekierowania.
+# :splat oznacza resztę adresu po gwiazdce, np. /index.php/kontakt prowadzi do /kontakt.
 /index.php                      /                    301
 /index.php/*                    /:splat              301
 /category/aktualnosci           /aktualnosci/        301

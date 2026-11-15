@@ -1,14 +1,30 @@
-/* MSI Telekom, strona jednostronicowa. Czysty JavaScript, bez bibliotek. */
+/* =========================================================
+   MSI Telekom: skrypt strony. Czysty JavaScript, bez bibliotek.
+
+   Ten sam plik działa na każdej podstronie. Każda część najpierw
+   sprawdza, czy jej element jest na stronie, a jeśli go nie ma,
+   po prostu nic nie robi. Części skryptu:
+   1. Menu na telefonie (przycisk "Menu", zamykanie klawiszem Esc).
+   2. Cień pod nagłówkiem po przewinięciu strony.
+   3. Podkreślenie w menu sekcji, którą właśnie widać (strona główna).
+   4. Zapasowe obrazy, gdy plik się nie wczyta.
+   5. Mapa Google wczytywana dopiero po kliknięciu (mapa zasięgu).
+   6. Sprawdzanie formularza kontaktowego.
+   ========================================================= */
 (function () {
   'use strict';
 
+  // Klasa "js" na <html> mówi arkuszowi stylów, że skrypt działa.
+  // Dopiero wtedy CSS chowa menu na telefonie pod przyciskiem.
   var root = document.documentElement;
   root.classList.add('js');
 
-  /* ---------- Menu mobilne ---------- */
+  /* ---------- 1. Menu mobilne ---------- */
   var toggle = document.querySelector('.nav-toggle');
   var nav = document.getElementById('menu');
 
+  // Otwiera (open = true) albo zamyka menu i zmienia napis na przycisku.
+  // aria-expanded informuje czytniki ekranu, czy menu jest rozwinięte.
   function setMenu(open) {
     if (!toggle || !nav) return;
     nav.classList.toggle('is-open', open);
@@ -19,9 +35,11 @@
     toggle.addEventListener('click', function () {
       setMenu(toggle.getAttribute('aria-expanded') !== 'true');
     });
+    // kliknięcie w link w menu zamyka menu
     nav.addEventListener('click', function (e) {
       if (e.target.closest('a')) setMenu(false);
     });
+    // klawisz Esc zamyka menu i wraca na przycisk
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
         setMenu(false);
@@ -30,7 +48,8 @@
     });
   }
 
-  /* ---------- Cień nagłówka po przewinięciu ---------- */
+  /* ---------- 2. Cień nagłówka po przewinięciu ----------
+     Po przewinięciu o więcej niż 8 px nagłówek dostaje klasę is-stuck (cień w CSS). */
   var header = document.querySelector('.site-header');
   function onScroll() {
     if (header) header.classList.toggle('is-stuck', window.scrollY > 8);
@@ -38,7 +57,9 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  /* ---------- Podświetlanie aktywnej sekcji w menu ---------- */
+  /* ---------- 3. Podświetlanie aktywnej sekcji w menu ----------
+     Dotyczy linków w menu prowadzących do sekcji tej samej strony (#oferta itp.).
+     Gdy sekcja jest na środku ekranu, jej link dostaje aria-current i podkreślenie. */
   var links = Array.prototype.slice.call(document.querySelectorAll('.nav a[href^="#"]:not(.btn)'));
   if ('IntersectionObserver' in window && links.length) {
     var map = {};
@@ -57,7 +78,11 @@
     });
   }
 
-  /* ---------- Obrazy: lokalny plik, potem adres zapasowy, potem tekst ---------- */
+  /* ---------- 4. Obrazy zapasowe ----------
+     Dla obrazków z atrybutem data-fallback lub data-local: gdy plik się nie wczyta,
+     skrypt próbuje adresu zapasowego, a gdy i ten zawiedzie, chowa obrazek
+     i pokazuje tekst zastępczy. Obecnie żaden obrazek z tego nie korzysta,
+     funkcja zostaje na wypadek dodania zdjęć. */
   function handleImage(img) {
     function giveUp() {
       img.hidden = true;
@@ -82,7 +107,10 @@
   }
   Array.prototype.forEach.call(document.querySelectorAll('img[data-fallback], img[data-local]'), handleImage);
 
-  /* ---------- Mapa Google: ładowana dopiero po kliknięciu ---------- */
+  /* ---------- 5. Mapa Google: wczytywana dopiero po kliknięciu ----------
+     Dopóki nikt nie kliknie, strona nie łączy się z Google. Odwiedzający, którzy
+     mapy nie oglądają, nie przekazują Google żadnych danych, a strona szybciej się ładuje.
+     Adres mapy jest w atrybucie data-map-src w pliku mapa-sieci/index.html. */
   var mapBox = document.getElementById('map');
   var mapBtn = mapBox && mapBox.querySelector('[data-map-load]');
   if (mapBox && mapBtn) {
@@ -97,11 +125,15 @@
     });
   }
 
-  /* ---------- Formularz kontaktowy (wersja demonstracyjna) ---------- */
+  /* ---------- 6. Formularz kontaktowy (wersja demonstracyjna) ----------
+     Sprawdza pola przed wysłaniem i pokazuje komunikaty pod błędnymi polami.
+     Wiadomość nie jest jeszcze nigdzie wysyłana (patrz miejsce oznaczone DEMO niżej). */
   var form = document.getElementById('contact-form');
   if (form) {
     var status = form.querySelector('.form__status');
 
+    // Pole kontaktowe przyjmuje adres e-mail albo numer telefonu (9 do 13 cyfr,
+    // spacje, nawiasy, plus i myślniki są pomijane przy liczeniu cyfr).
     var isContact = function (v) {
       v = v.trim();
       var email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
@@ -110,6 +142,9 @@
       return email || phone;
     };
 
+    // Reguły sprawdzania. Każda ma: id pola, id miejsca na komunikat,
+    // treść komunikatu i funkcję, która zwraca true, gdy pole jest poprawne.
+    // Aby zmienić treść błędu, wystarczy poprawić tekst w msg.
     var rules = [
       { id: 'name',    err: 'err-name',    msg: 'Prosimy o podanie imienia i nazwiska.',
         ok: function (el) { return el.value.trim().length >= 2; } },
@@ -121,6 +156,7 @@
         ok: function (el) { return el.checked; } }
     ];
 
+    // Pokazuje albo chowa komunikat błędu przy danym polu.
     var showError = function (rule, el, visible) {
       var box = document.getElementById(rule.err);
       var field = el.closest('.field');
@@ -130,6 +166,7 @@
       box.hidden = !visible;
     };
 
+    // Kliknięcie "Wyślij": sprawdzenie wszystkich pól, kursor wraca do pierwszego błędnego.
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       status.textContent = '';
@@ -152,6 +189,7 @@
       status.textContent = 'Jest to wersja demonstracyjna, dlatego wiadomość nie została wysłana. Formularz zostanie połączony z serwerem podczas wdrożenia.';
     });
 
+    // Komunikat znika od razu, gdy użytkownik poprawi pole.
     rules.forEach(function (rule) {
       var el = form.elements[rule.id];
       var evt = el.type === 'checkbox' ? 'change' : 'input';

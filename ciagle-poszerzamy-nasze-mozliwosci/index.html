@@ -3,18 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Tytuł karty i opis strony, widoczne też w wynikach Google -->
 <title>Ciągle poszerzamy nasze możliwości w nowych miejscowościach! MSI Telekom</title>
 <meta name="description" content="Zasięgiem naszej sieci objęliśmy kolejne miasta.">
 <!-- WERSJA DEMO: przed publikacją pod adresem msitelekom.pl usuń poniższą linię (patrz README) -->
 <meta name="robots" content="noindex, nofollow">
+<!-- Kolor paska przeglądarki na telefonie i ikona w karcie przeglądarki -->
 <meta name="theme-color" content="#071C38">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="../css/style.css?v=9">
-<script src="../js/main.js?v=9" defer></script>
+<!-- Wygląd (CSS) i skrypt (JS) wspólne dla wszystkich podstron.
+     ?v=10 to numer wersji: po zmianie pliku CSS lub JS zwiększ go we wszystkich stronach,
+     wtedy przeglądarki pobiorą nowy plik zamiast starego z pamięci.
+     Ścieżki zaczynające się od ../ prowadzą do głównego katalogu strony, dzięki temu
+     strona działa także w podkatalogu (np. wersja demo na GitHub Pages). -->
+<link rel="stylesheet" href="../css/style.css?v=10">
+<script src="../js/main.js?v=10" defer></script>
 </head>
+<!-- Klasa na body wybiera motyw kolorystyczny (opis w README, część Wygląd) -->
 <body class="theme-light">
+<!-- Link dla osób korzystających z klawiatury: pozwala pominąć menu -->
 <a class="skip" href="#tresc">Przejdź do treści</a>
 
+<!-- Pasek kontaktowy nad menu -->
 <div class="topbar">
   <div class="wrap topbar__in">
     <p>Zgłaszanie awarii: <a href="tel:+48556208383">+48 55 620 83 83</a></p>
@@ -22,6 +32,8 @@
   </div>
 </div>
 
+<!-- Nagłówek: logo i menu. Na telefonie menu rozwija przycisk "Menu" (obsługa w js/main.js).
+     aria-current="page" oznacza bieżącą stronę, dlatego jej pozycja w menu jest podkreślona. -->
 <header class="site-header" id="top">
   <div class="wrap header__in">
     <a class="brand" href="../" aria-label="MSI Telekom, strona główna">
@@ -41,9 +53,11 @@
   </div>
 </header>
 
+<!-- ===== Treść strony ===== -->
 <main id="tresc">
   <section class="page-hero page-hero--article" aria-labelledby="page-title">
     <div class="wrap">
+      <!-- Okruszki: ścieżka od strony głównej do bieżącej podstrony -->
       <nav class="crumbs" aria-label="Okruszki"><a href="../">Strona główna</a><span aria-hidden="true">/</span><a href="../aktualnosci/">Aktualności</a><span aria-hidden="true">/</span><span aria-current="page">Wpis</span></nav>
       <h1 id="page-title">Ciągle poszerzamy nasze możliwości w&nbsp;nowych miejscowościach!</h1>
       <p><time datetime="2016-07-29">29 lipca 2016</time></p>
@@ -63,6 +77,7 @@
     </div>
   </section>
 
+  <!-- Zachęta do kontaktu -->
   <section class="cta" aria-labelledby="cta-title">
     <div class="wrap">
       <h2 id="cta-title">Rozwiązujemy problemy informatyczne firm</h2>
@@ -72,7 +87,9 @@
   </section>
 
 </main>
+<!-- ===== Koniec treści ===== -->
 
+<!-- Stopka: dane firmy, kontakt i linki do podstron -->
 <footer class="site-footer">
   <div class="wrap footer__in">
     <div>

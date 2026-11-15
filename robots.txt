@@ -1,3 +1,4 @@
+# Plik dla wyszukiwarek (Google, Bing): które adresy mogą odwiedzać.
 # WERSJA DEMO: blokada indeksowania. Przed publikacją pod msitelekom.pl
 # zamień na: User-agent: *  /  Allow: /
 User-agent: *

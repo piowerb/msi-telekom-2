@@ -45,7 +45,7 @@ To decyzja klienta i warto ją zaplanować z wyprzedzeniem:
 
 - Teksty usług i wpisów to zredagowane, skrócone wersje treści ze starej strony, w formalnym stylu. Jeśli klient woli oryginały, wystarczy podmienić akapity.
 - Adresy e-mail opiekunów Klienta pochodzą z treści starej strony kontakt. Na starej stronie linki przy tych adresach prowadziły do innej skrzynki, więc warto potwierdzić, które adresy są aktualne.
-- Referencje są pokazane jako nazwy firm (bez logotypów). Logotypy można dodać po otrzymaniu plików i zgody na ich publikację.
+- Logotypy referencji pochodzą z dotychczasowej strony. Warto potwierdzić z klientem, że wszystkie firmy nadal zgadzają się na ich publikację.
 - Polityka prywatności nie wspomina o mapie Google ani o formularzu kontaktowym.
 
 ## Dwie wersje kolorystyczne
@@ -63,6 +63,27 @@ Pliki są w `assets/img/referencje/` (WebP, białe tło usunięte, przycięte ma
 
 Jasny motyw w stylu CFC (biel, poziomy pas niebieskiego światła, obrysowane przyciski) włącza klasa `theme-light` na znaczniku `<body>` w każdej stronie. Usunięcie tej klasy przywraca ciemną wersję w stylu Exatel. Ze struktury Exatela pochodzą moduły usług nachodzące na górną sekcję oraz akordeon z najczęściej zadawanymi pytaniami.
 
+## Co jest w którym pliku
+
+| Plik lub katalog | Do czego służy |
+|---|---|
+| `index.html` | strona główna |
+| `nazwa-podstrony/index.html` | każda podstrona ma własny katalog, dzięki temu adresy są takie jak na starej stronie |
+| `css/style.css` | cały wygląd strony: kolory, układ, wersja na telefon. Na początku pliku jest spis jego części |
+| `js/main.js` | menu na telefonie, mapa Google po kliknięciu, sprawdzanie formularza. Na początku pliku jest spis jego części |
+| `assets/logo.svg`, `assets/favicon.svg` | logo i ikona w karcie przeglądarki |
+| `assets/img/referencje/` | logotypy klientów w sekcji „Zaufali nam” i na stronie Referencje |
+| `wersja-2/` | kompletna druga wersja strony w dotychczasowych kolorach MSI Telekom |
+| `404.html` | strona wyświetlana, gdy adres nie istnieje |
+| `firma.html`, `referencje.html`, `polityka-prywatnosci.html` | przekierowania ze starych adresów wersji demo |
+| `_headers` | nagłówki bezpieczeństwa dla Cloudflare Pages (opis każdego nagłówka w komentarzach w pliku) |
+| `_redirects` | przekierowania starych adresów dla Cloudflare Pages |
+| `.htaccess.example` | to samo co `_headers` i `_redirects`, ale dla zwykłego hostingu z Apache |
+| `robots.txt` | informacja dla wyszukiwarek, czy mogą indeksować stronę |
+| `.nojekyll` | pusty plik, który mówi GitHub Pages, żeby publikował pliki bez przetwarzania |
+
+W plikach HTML, CSS i JS są komentarze po polsku, które opisują poszczególne części: w HTML w znacznikach `<!-- ... -->`, w CSS i JS w `/* ... */` oraz `//`.
+
 ## Edycja
 
-Każda podstrona to `nazwa/index.html`. Menu i stopka są powtórzone w każdym pliku, więc zmianę w nich trzeba wprowadzić we wszystkich stronach. Kolory są w `:root` na początku `css/style.css`. Po zmianie CSS lub JS podbij numer wersji `?v=8` w plikach HTML.
+Każda podstrona to `nazwa/index.html`. Menu i stopka są powtórzone w każdym pliku, więc zmianę w nich trzeba wprowadzić we wszystkich stronach. Kolory są w `:root` na początku `css/style.css`. Po zmianie CSS lub JS podbij numer wersji `?v=10` w plikach HTML.

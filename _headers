@@ -1,4 +1,19 @@
-# Cloudflare Pages: nagłówki HTTP dla całej strony.
+# Cloudflare Pages: nagłówki HTTP. Cloudflare czyta ten plik sam, nic nie trzeba włączać.
+# Linia bez wcięcia to adres (/* oznacza wszystkie strony), linie z wcięciem to nagłówki dla niego.
+#
+# Co robią nagłówki bezpieczeństwa:
+# X-Content-Type-Options      przeglądarka nie zgaduje typu pliku (np. nie uruchomi obrazka jako skryptu)
+# X-Frame-Options             strony nie można osadzić w ramce na cudzej stronie (ochrona przed podszywaniem)
+# Referrer-Policy             inne strony dostają tylko adres domeny, bez pełnego adresu podstrony
+# Permissions-Policy          strona nie prosi o kamerę, mikrofon, lokalizację, płatności ani USB
+# Cross-Origin-Opener-Policy  okna otwarte z innych stron nie mają dostępu do tej strony
+# Strict-Transport-Security   przeglądarka łączy się z domeną zawsze przez HTTPS (przez rok)
+# Content-Security-Policy     lista dozwolonych źródeł: skrypty, style i obrazy tylko z tej domeny,
+#                             ramka tylko z Google (mapa zasięgu). Każdy obcy skrypt zostanie zablokowany.
+#                             Po dodaniu zewnętrznej usługi (np. formularza) trzeba dopisać ją tutaj.
+#
+# Cache-Control na dole: jak długo przeglądarka trzyma pliki w pamięci (w sekundach: 2592000 = 30 dni,
+# 604800 = 7 dni). Dlatego po zmianie CSS lub JS podbija się numer ?v= w plikach HTML.
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY

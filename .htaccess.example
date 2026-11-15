@@ -2,6 +2,7 @@
 # Na Cloudflare Pages ten plik nie jest potrzebny: tę samą rolę pełnią pliki _headers i _redirects.
 # Skopiuj jako .htaccess. Po wdrożeniu sprawdź nagłówki na https://securityheaders.com
 
+# Nagłówki bezpieczeństwa, te same co w pliku _headers (tam jest opis każdego z nich)
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "DENY"
@@ -13,7 +14,10 @@
   # Header always set Strict-Transport-Security "max-age=31536000"
 </IfModule>
 
+# Strona wyświetlana, gdy adres nie istnieje
 ErrorDocument 404 /404.html
+
+# Wymuszenie HTTPS i przekierowania starych adresów (jak w pliku _redirects)
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
@@ -25,6 +29,7 @@ ErrorDocument 404 /404.html
   RewriteRule ^(internet-swiatlowodowy-mragowo|internet-ketrzyn)/?$ /mapa-sieci/ [L,R=301]
 </IfModule>
 
+# Jak długo przeglądarka trzyma pliki w pamięci
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType text/css "access plus 1 month"
