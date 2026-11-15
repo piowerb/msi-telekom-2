@@ -1,2 +1,4 @@
+# WERSJA DEMO: blokada indeksowania. Przed publikacją pod msitelekom.pl
+# zamień na: User-agent: *  /  Allow: /
 User-agent: *
 Disallow: /

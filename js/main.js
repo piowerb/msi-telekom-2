@@ -80,7 +80,22 @@
     img.addEventListener('error', fail);
     if (img.getAttribute('loading') !== 'lazy' && img.complete && img.naturalWidth === 0) fail();
   }
-  Array.prototype.forEach.call(document.querySelectorAll('img[data-fallback]'), handleImage);
+  Array.prototype.forEach.call(document.querySelectorAll('img[data-fallback], img[data-local]'), handleImage);
+
+  /* ---------- Mapa Google: ładowana dopiero po kliknięciu ---------- */
+  var mapBox = document.getElementById('map');
+  var mapBtn = mapBox && mapBox.querySelector('[data-map-load]');
+  if (mapBox && mapBtn) {
+    mapBtn.addEventListener('click', function () {
+      var frame = document.createElement('iframe');
+      frame.src = mapBox.getAttribute('data-map-src');
+      frame.title = 'Mapa sieci MSI Telekom';
+      frame.loading = 'lazy';
+      frame.setAttribute('allowfullscreen', '');
+      frame.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+      mapBox.replaceChildren(frame);
+    });
+  }
 
   /* ---------- Formularz kontaktowy (wersja demonstracyjna) ---------- */
   var form = document.getElementById('contact-form');

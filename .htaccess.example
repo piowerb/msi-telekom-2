@@ -1,0 +1,33 @@
+# Wersja dla hostingu z Apache lub LiteSpeed (zwykły hosting współdzielony).
+# Na Cloudflare Pages ten plik nie jest potrzebny: tę samą rolę pełnią pliki _headers i _redirects.
+# Skopiuj jako .htaccess. Po wdrożeniu sprawdź nagłówki na https://securityheaders.com
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+  # Odkomentuj, gdy HTTPS działa na całej domenie:
+  # Header always set Strict-Transport-Security "max-age=31536000"
+</IfModule>
+
+ErrorDocument 404 /404.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  RewriteRule ^index\.php/(.*)$ /$1 [L,R=301]
+  RewriteRule ^category/aktualnosci/?.*$ /aktualnosci/ [L,R=301]
+  RewriteRule ^internet-swiatlowodowy-olsztyn/?$ /internet-dla-firm/ [L,R=301]
+  RewriteRule ^(internet-swiatlowodowy-mragowo|internet-ketrzyn)/?$ /mapa-sieci/ [L,R=301]
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 week"
+</IfModule>

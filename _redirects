@@ -1,0 +1,17 @@
+# Cloudflare Pages: przekierowania starych adresów (301 = na stałe).
+# Podstrony mają te same adresy co stara strona, więc tu są tylko wyjątki.
+/index.php                      /                    301
+/index.php/*                    /:splat              301
+/category/aktualnosci           /aktualnosci/        301
+/category/aktualnosci/*         /aktualnosci/        301
+/firma.html                     /firma/              301
+/referencje.html                /referencje/         301
+/polityka-prywatnosci.html      /polityka-prywatnosci/  301
+/internet-swiatlowodowy-olsztyn /internet-dla-firm/  301
+/internet-swiatlowodowy-olsztyn/ /internet-dla-firm/ 301
+/internet-swiatlowodowy-mragowo /mapa-sieci/         301
+/internet-swiatlowodowy-mragowo/ /mapa-sieci/        301
+/internet-ketrzyn               /mapa-sieci/         301
+/internet-ketrzyn/              /mapa-sieci/         301
+/feed                           /aktualnosci/        301
+/feed/                          /aktualnosci/        301
