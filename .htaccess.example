@@ -9,7 +9,7 @@
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
   Header always set Cross-Origin-Opener-Policy "same-origin"
-  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self' 'sha256-g2ihobCtrKIneH0+7dje9OKlsqPJ3dxh+mreDmRVbMw='; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self' 'sha256-g2ihobCtrKIneH0+7dje9OKlsqPJ3dxh+mreDmRVbMw='; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
   # Odkomentuj, gdy HTTPS działa na całej domenie:
   # Header always set Strict-Transport-Security "max-age=31536000"
 </IfModule>
@@ -24,7 +24,12 @@ ErrorDocument 404 /404.html
   RewriteCond %{HTTPS} off
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
   RewriteRule ^index\.php/(.*)$ /$1 [L,R=301]
-  RewriteRule ^category/aktualnosci/?.*$ /aktualnosci/ [L,R=301]
+  RewriteRule ^(category|tag|author)/.*$ /aktualnosci/ [L,R=301]
+  RewriteRule ^comments/feed/?$ /aktualnosci/ [L,R=301]
+  RewriteRule ^([^/]+)/feed/?$ /$1/ [L,R=301]
+  RewriteRule ^feed/?$ /aktualnosci/ [L,R=301]
+  RewriteRule ^jak-dzierzawa-wlokien-swiatlodowych-zmienia-biznes-na-warmii-i-mazurach/?$ /jak-dzierzawa-wlokien-swiatlowodowych-zmienia-biznes-na-warmii-i-mazurach/ [L,R=301]
+  RewriteRule ^wersja-2/?(.*)$ /$1 [L,R=301]
   RewriteRule ^internet-swiatlowodowy-olsztyn/?$ /internet-dla-firm/ [L,R=301]
   RewriteRule ^(internet-swiatlowodowy-mragowo|internet-ketrzyn)/?$ /mapa-sieci/ [L,R=301]
 </IfModule>

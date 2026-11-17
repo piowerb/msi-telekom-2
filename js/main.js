@@ -8,7 +8,7 @@
    2. Cień pod nagłówkiem po przewinięciu strony.
    3. Podkreślenie w menu sekcji, którą właśnie widać (strona główna).
    4. Zapasowe obrazy, gdy plik się nie wczyta.
-   5. Mapa Google wczytywana dopiero po kliknięciu (mapa zasięgu).
+   5. Interaktywna mapa zasięgu (nazwy punktów, przybliżenie, lista miejscowości).
    6. Sprawdzanie formularza kontaktowego.
    ========================================================= */
 (function () {
@@ -107,21 +107,128 @@
   }
   Array.prototype.forEach.call(document.querySelectorAll('img[data-fallback], img[data-local]'), handleImage);
 
-  /* ---------- 5. Mapa Google: wczytywana dopiero po kliknięciu ----------
-     Dopóki nikt nie kliknie, strona nie łączy się z Google. Odwiedzający, którzy
-     mapy nie oglądają, nie przekazują Google żadnych danych, a strona szybciej się ładuje.
-     Adres mapy jest w atrybucie data-map-src w pliku mapa-sieci/index.html. */
-  var mapBox = document.getElementById('map');
-  var mapBtn = mapBox && mapBox.querySelector('[data-map-load]');
-  if (mapBox && mapBtn) {
-    mapBtn.addEventListener('click', function () {
-      var frame = document.createElement('iframe');
-      frame.src = mapBox.getAttribute('data-map-src');
-      frame.title = 'Mapa sieci MSI Telekom';
-      frame.loading = 'lazy';
-      frame.setAttribute('allowfullscreen', '');
-      frame.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
-      mapBox.replaceChildren(frame);
+  /* ---------- 5. Interaktywna mapa zasięgu ----------
+     Mapa jest częścią strony (rysunek SVG), nie łączy się z Google ani z innymi serwisami.
+     Najechanie lub dotknięcie punktu pokazuje nazwę miejscowości. Przycisk przybliża
+     okolice Olsztyna, gdzie punkty leżą blisko siebie. Nazwy na liście pod mapą
+     podświetlają odpowiedni punkt na mapie. */
+  var mz = document.querySelector('.mz');
+  if (mz) {
+    var mapWrap = mz.closest('.map');
+    var tip = mapWrap.querySelector('.map__tip');
+    var zoomBtn = mapWrap.querySelector('[data-map-zoom]');
+    var points = Array.prototype.slice.call(mz.querySelectorAll('.mz-pt'));
+    var listBtns = Array.prototype.slice.call(document.querySelectorAll('.cities [data-place]'));
+    var active = null;
+
+    // środek punktu na ekranie
+    var centre = function (pt) {
+      var r = pt.querySelector('.mz-dot').getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2, top: r.top, bottom: r.bottom };
+    };
+
+    // podświetla punkt (albo nic, gdy pt = null) i pokazuje dymek z nazwą
+    var show = function (pt) {
+      if (active) active.classList.remove('is-active');
+      active = pt;
+      listBtns.forEach(function (b) {
+        b.classList.toggle('is-active', !!pt && b.getAttribute('data-place') === pt.getAttribute('data-name'));
+      });
+      if (!pt) { tip.hidden = true; return; }
+      pt.classList.add('is-active');
+      pt.parentNode.appendChild(pt); // aktywny punkt na wierzchu
+
+      tip.textContent = '';
+      var name = document.createElement('strong');
+      name.textContent = pt.getAttribute('data-name');
+      tip.appendChild(name);
+      if (pt.getAttribute('data-note')) {
+        var note = document.createElement('span');
+        note.textContent = pt.getAttribute('data-note');
+        tip.appendChild(note);
+      }
+      tip.hidden = false;
+
+      // dymek nad punktem, a przy górnej krawędzi pod nim; nie wychodzi poza mapę w poziomie
+      var c = centre(pt), box = mapWrap.getBoundingClientRect();
+      var half = tip.offsetWidth / 2 + 8;
+      var x = Math.max(half, Math.min(box.width - half, c.x - box.left));
+      var below = c.top - box.top < tip.offsetHeight + 16;
+      tip.classList.toggle('is-below', below);
+      tip.style.left = x + 'px';
+      tip.style.top = (below ? c.bottom : c.top) - box.top + 'px';
+    };
+
+    // najbliższy punkt w promieniu maxPx od kursora lub palca
+    var nearest = function (e, maxPx) {
+      var best = null, bestD = maxPx;
+      points.forEach(function (pt) {
+        var c = centre(pt), d = Math.sqrt(Math.pow(c.x - e.clientX, 2) + Math.pow(c.y - e.clientY, 2));
+        if (d < bestD) { best = pt; bestD = d; }
+      });
+      return best;
+    };
+
+    mz.addEventListener('pointermove', function (e) {
+      if (e.pointerType !== 'mouse') return;
+      var pt = nearest(e, 16);
+      if (pt !== active) show(pt);
+    });
+    mz.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') show(null); });
+    mz.addEventListener('click', function (e) { show(nearest(e, 28)); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && active) show(null); });
+    document.addEventListener('click', function (e) {
+      if (active && !mapWrap.contains(e.target) && !e.target.closest('.cities')) show(null);
+    });
+
+    // przybliżenie okolic Olsztyna (na telefonie węższy i wyższy fragment mapy)
+    var narrow = window.matchMedia('(max-width: 44rem)');
+    var zoomBox = function () { return mz.getAttribute(narrow.matches ? 'data-zoom-m' : 'data-zoom'); };
+    var setZoom = function (on) {
+      mz.classList.toggle('is-zoomed', on);
+      mz.setAttribute('viewBox', on ? zoomBox() : mz.getAttribute('data-full'));
+      zoomBtn.textContent = on ? 'Pokaż cały zasięg' : 'Przybliż okolice Olsztyna';
+      zoomBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    };
+    if (zoomBtn) zoomBtn.addEventListener('click', function () { setZoom(!mz.classList.contains('is-zoomed')); show(null); });
+
+    // czy punkt mieści się w przybliżonym fragmencie mapy
+    var inZoom = function (pt) {
+      var v = zoomBox().split(' ').map(Number);
+      var t = pt.getAttribute('transform').match(/translate\(([\d.]+) ([\d.]+)\)/);
+      var x = +t[1], y = +t[2];
+      return x > v[0] && x < v[0] + v[2] && y > v[1] && y < v[1] + v[3];
+    };
+
+    // lista miejscowości pod mapą: najechanie lub kliknięcie pokazuje punkt na mapie
+    var find = function (name) {
+      for (var i = 0; i < points.length; i++) if (points[i].getAttribute('data-name') === name) return points[i];
+      return null;
+    };
+    listBtns.forEach(function (b) {
+      var pt = find(b.getAttribute('data-place'));
+      if (!pt) return;
+      b.addEventListener('mouseenter', function () {
+        if (mz.classList.contains('is-zoomed') && !inZoom(pt)) return;
+        var r = mapWrap.getBoundingClientRect();
+        if (r.bottom > 0 && r.top < window.innerHeight) show(pt);
+      });
+      b.addEventListener('click', function () {
+        if (mz.classList.contains('is-zoomed') && !inZoom(pt)) setZoom(false);
+        var r = mapWrap.getBoundingClientRect();
+        var visible = r.top >= 0 && r.bottom <= window.innerHeight;
+        if (!visible) {
+          var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          mapWrap.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+          setTimeout(function () { show(pt); }, reduce ? 0 : 450);
+        } else {
+          show(pt);
+        }
+      });
+    });
+    window.addEventListener('resize', function () {
+      if (mz.classList.contains('is-zoomed')) mz.setAttribute('viewBox', zoomBox());
+      if (active) show(active);
     });
   }
 

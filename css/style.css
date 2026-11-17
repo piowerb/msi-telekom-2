@@ -448,12 +448,11 @@ a.logo-tile:hover .logo-tile__name { color: var(--blue-700); }
 .tile--solid .tile__label { padding: 1.75rem; font-size: 1.2rem; }
 a.tile--solid:hover .tile__label { color: #9fd8ff; }
 
-/* Mapa zasięgu. Zanim użytkownik kliknie, widać grafikę zastępczą z przyciskiem
-   (.map__placeholder i .map__box). Po kliknięciu js/main.js wstawia mapę Google. */
+/* Ramka mapy zasięgu. Sama mapa (rysunek SVG, legenda, dymki) ma style
+   w sekcji "Mapa zasięgu: własna mapa SVG" w dalszej części pliku. */
 .lead--wide { max-width: 46rem; }
 .map { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--navy-900); border-radius: var(--radius); margin-top: 2rem; }
 @media (min-width: 44rem) { .map { aspect-ratio: 16 / 9; } }
-.map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .map__placeholder { position: absolute; inset: 0; display: grid; place-items: center; padding: 1.25rem; }
 .map__placeholder svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .map__box { position: relative; max-width: 30rem; padding: 1.75rem; text-align: center; color: #fff; background: rgba(5, 20, 40, .82); border: 1px solid rgba(126, 196, 255, .35); border-radius: var(--radius); }
@@ -703,3 +702,182 @@ a.tile--solid:hover .tile__label { color: #9fd8ff; }
 .logos-grid li:hover img[src$="netia.webp"], .logos-grid li:hover img[src$="play.webp"] { filter: none; opacity: 1; }
 /* wersja 2: stare logo jest szersze i niższe, dlatego ma własną wysokość */
 .theme-classic .brand img { height: 2.9rem; }
+
+
+/* =========================================================
+   Mapa zasięgu: własna mapa SVG (bez Google)
+   Rysunek jest zapisany w treści strony, obsługa w js/main.js (część 5).
+   Wielkości w px wewnątrz SVG są w jednostkach rysunku
+   (szerokość mapy = 1000), dlatego na telefonie i po
+   przybliżeniu są ustawione osobno.
+   ========================================================= */
+.map--own { aspect-ratio: auto; overflow: visible; background: var(--navy-950); }
+.mz { display: block; width: 100%; height: auto; border-radius: var(--radius) var(--radius) 0 0; touch-action: manipulation; }
+
+/* tło i województwa */
+.mz-bg { fill: var(--navy-950); }
+.mz-woj { stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.mz-woj--off { fill: #1a0520; stroke: rgba(243, 154, 208, .14); stroke-width: 1; }
+.mz-woj--on { fill: #2a0a33; stroke: rgba(243, 154, 208, .3); stroke-width: 1; }
+.mz-woj--main { fill: #3d1152; stroke: rgba(243, 154, 208, .6); stroke-width: 1.4; }
+.mz-reg { fill: rgba(236, 219, 232, .72); font-size: 14px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; pointer-events: none; }
+.mz-reg--main { fill: rgba(236, 219, 232, .78); }
+.mz-reg--off { fill: rgba(236, 219, 232, .62); }
+.mz-zoombox { fill: none; stroke: rgba(255, 217, 168, .55); stroke-width: 1; stroke-dasharray: 4 4; vector-effect: non-scaling-stroke; pointer-events: none; }
+
+/* punkty: .mz-sym to znak punktu, skalowany zależnie od ekranu i przybliżenia */
+.mz-pt { cursor: pointer; }
+.mz-sym { transform: scale(1); transition: transform .15s ease; }
+.mz-dot { fill: #e0409a; stroke: #fff; stroke-width: 1.2; vector-effect: non-scaling-stroke; }
+.mz-ring { fill: none; stroke: #f39ad0; stroke-width: 1.4; stroke-opacity: .7; vector-effect: non-scaling-stroke; }
+.mz-pt--hub .mz-dot { fill: #fff; stroke: #e0409a; stroke-width: 2.2; }
+.mz-pt--styk .mz-ring { stroke: #ffd9a8; stroke-dasharray: 3 3; }
+.mz-pt.is-active .mz-dot { fill: #ffd9a8; stroke: #fff; }
+.mz-pt.is-active .mz-sym { transform: scale(1.5); }
+
+/* podpisy miejscowości (obrys w kolorze tła dla czytelności) */
+.mz-lbl { fill: #fff; font-size: 14px; font-weight: 600; paint-order: stroke; stroke: var(--navy-950); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
+.mz-lbl--hub { font-size: 18px; font-weight: 700; }
+.mz-lbls--zoom { display: none; }
+
+/* po przybliżeniu okolic Olsztyna */
+.mz.is-zoomed .mz-lbls--full,
+.mz.is-zoomed .mz-reg,
+.mz.is-zoomed .mz-zoombox { display: none; }
+.mz.is-zoomed .mz-lbls--zoom { display: inline; }
+.mz.is-zoomed .mz-sym { transform: scale(.42); }
+.mz.is-zoomed .mz-pt.is-active .mz-sym { transform: scale(.62); }
+.mz.is-zoomed .mz-lbl { font-size: 4.8px; stroke-width: 1px; }
+.mz.is-zoomed .mz-lbl--hub { font-size: 6px; }
+
+/* przycisk przybliżenia, dymek z nazwą, legenda */
+.map__zoom { position: absolute; top: .75rem; right: .75rem; z-index: 2; background: rgba(15, 1, 18, .85); color: #fff; border: 1px solid rgba(243, 154, 208, .55); }
+.map__zoom:hover { background: #fff; color: var(--navy-900); }
+.map__tip { position: absolute; z-index: 3; transform: translate(-50%, calc(-100% - 10px)); padding: .45rem .75rem; background: #fff; color: var(--navy-900); border-radius: 6px; box-shadow: 0 8px 24px rgba(0, 0, 0, .35); font-size: .95rem; line-height: 1.3; text-align: center; white-space: nowrap; pointer-events: none; }
+.map__tip.is-below { transform: translate(-50%, 10px); }
+.map__tip[hidden] { display: none; }
+.map__tip strong { display: block; }
+.map__tip span { display: block; max-width: 15rem; white-space: normal; color: var(--muted); font-size: .85rem; }
+.map__foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .5rem 1.5rem; padding: .9rem 1.1rem 1rem; border-top: 1px solid rgba(243, 154, 208, .2); color: #ecdbe8; font-size: .875rem; }
+.map__legend { display: flex; flex-wrap: wrap; gap: .4rem 1.25rem; margin: 0; padding: 0; list-style: none; }
+.map__legend li { display: flex; align-items: center; gap: .45rem; }
+.lg { display: inline-block; width: .7rem; height: .7rem; border-radius: 50%; flex: none; }
+.lg--pt { background: #e0409a; box-shadow: 0 0 0 1.5px #fff; }
+.lg--hub { background: #fff; box-shadow: 0 0 0 2px #e0409a, 0 0 0 4px rgba(243, 154, 208, .6); }
+.lg--styk { background: #e0409a; box-shadow: 0 0 0 1.5px #fff, 0 0 0 4px rgba(255, 217, 168, .7); }
+.map__src { margin: 0; color: #cdb5c7; font-size: .8125rem; }
+
+/* lista miejscowości: nazwy są przyciskami pokazującymi punkt na mapie */
+.cities__btn { display: inline-block; min-width: 2rem; min-height: 1.5rem; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.cities__btn:hover, .cities__btn.is-active { color: var(--blue-700); text-decoration: underline; text-underline-offset: .2em; }
+
+/* telefon: mniej podpisów, większe punkty */
+@media (max-width: 44rem) {
+  .mz-lbl { display: none; }
+  .mz-lbl--hub { display: inline; font-size: 40px; stroke-width: 7px; }
+  .mz-reg { font-size: 30px; }
+  .mz-reg:not(.mz-reg--main) { display: none; }
+  .mz-sym { transform: scale(2.1); }
+  .mz-pt.is-active .mz-sym { transform: scale(2.8); }
+  .mz.is-zoomed .mz-lbl { display: inline; font-size: 5.6px; stroke-width: 1.2px; }
+  .mz.is-zoomed .mz-lbl--hub { font-size: 6.8px; }
+  .mz.is-zoomed .mz-sym { transform: scale(.5); }
+  .mz.is-zoomed .mz-pt.is-active .mz-sym { transform: scale(.75); }
+  .map__zoom { position: static; display: block; width: calc(100% - 1rem); margin: .5rem .5rem 0; }
+  .map__foot { font-size: .8125rem; }
+}
+@media (prefers-reduced-motion: reduce) { .mz-sym { transition: none; } }
+
+/* =========================================================
+   WERSJA 2: kolorystyka dotychczasowej strony MSI Telekom
+   (czarno-fioletowe tło, magentowe akcenty, stare logo).
+   Działa przez klasę theme-classic na <body>.
+   ========================================================= */
+.theme-classic {
+  --navy-950: #0f0112;
+  --navy-900: #1e0526;
+  --navy-800: #330738;
+  --blue-500: #e0409a;
+  --blue-700: #b82078;
+  --blue-800: #951a62;
+  --mist: #f8f0f5;
+  --sky: #f3e6ef;
+  --line: #ead9e4;
+  --text: #2a1a2e;
+  --muted: #5f4d63;
+}
+
+/* pasek kontaktowy jak na starej stronie */
+.theme-classic .topbar { background: #3d1152; color: #ecdbe8; }
+
+/* hero: czerń przechodząca w fiolet, magentowa poświata */
+.theme-classic .hero {
+  background:
+    radial-gradient(60rem 26rem at 50% 105%, rgba(224, 64, 154, .28), transparent 65%),
+    linear-gradient(180deg, #1a0420, var(--navy-950));
+}
+.theme-classic .hero__lead { color: #ecdbe8; }
+.theme-classic .hero .btn--accent { background: var(--blue-700); color: #fff; }
+.theme-classic .hero .btn--accent:hover { background: var(--blue-800); color: #fff; }
+
+/* glob: fiolet z ciepłymi światłami miast, jak na zdjęciu ze starej strony */
+.theme-classic #dome stop:nth-child(1) { stop-color: #6a1a74; }
+.theme-classic #dome stop:nth-child(2) { stop-color: #33093c; }
+.theme-classic #dome stop:nth-child(3) { stop-color: #14031a; }
+.theme-classic #rim stop:nth-child(1),
+.theme-classic #rim stop:nth-child(5) { stop-color: #e0409a; }
+.theme-classic #rim stop:nth-child(2),
+.theme-classic #rim stop:nth-child(4) { stop-color: #f39ad0; }
+.theme-classic #rim stop:nth-child(3) { stop-color: #fff1f8; }
+.theme-classic .lights circle { fill: #ffd9a8; }
+.theme-classic .fibers path { stroke: rgba(243, 154, 208, .38); }
+.theme-classic .nodes circle { fill: #1e0526; stroke: #f39ad0; }
+.theme-classic .nodes .hub { fill: #e0409a; stroke: #fff; }
+.theme-classic .pulse { stroke: #ffc2e3; }
+.theme-classic .pulse.halo { stroke: #ff7fc4; }
+
+/* nagłówki podstron i pasy CTA */
+.theme-classic .page-hero {
+  background:
+    radial-gradient(48rem 16rem at 50% 125%, rgba(224, 64, 154, .32), transparent 65%),
+    linear-gradient(180deg, #1a0420, var(--navy-950));
+}
+.theme-classic .page-hero::after { background: linear-gradient(90deg, transparent, #f39ad0 30%, #fff1f8 50%, #f39ad0 70%, transparent); }
+.theme-classic .page-hero p,
+.theme-classic .cta p { color: #ecdbe8; }
+.theme-classic .crumbs, .theme-classic .crumbs [aria-current] { color: #e6b8d6; }
+.theme-classic .crumbs a { color: #fff; }
+.theme-classic .cta { background: linear-gradient(180deg, #1a0420, var(--navy-950)); }
+
+/* przyciski na ciemnym tle: obrys jak "zobacz" na starej stronie */
+.theme-classic .cta .btn--accent,
+.theme-classic .map__box .btn--accent {
+  background: transparent; color: #fff; border: 2px solid #fff;
+}
+.theme-classic .cta .btn--accent:hover,
+.theme-classic .map__box .btn--accent:hover { background: #fff; color: var(--navy-900); }
+
+/* panel mapy */
+.theme-classic .map__placeholder rect { fill: #1e0526; }
+.theme-classic .map__placeholder g[stroke] { stroke: #f39ad0; }
+.theme-classic .map__placeholder g circle { fill: #1e0526; stroke: #f39ad0; }
+.theme-classic .map__placeholder svg > circle { fill: #e0409a; }
+.theme-classic .map__box { background: rgba(15, 1, 18, .82); border-color: rgba(243, 154, 208, .35); }
+.theme-classic .map__note { color: #ecdbe8; }
+
+/* pola formularza i fokus */
+.theme-classic .field input[type="text"]:focus,
+.theme-classic .field textarea:focus { outline-color: rgba(224, 64, 154, .4); }
+.theme-classic :focus-visible { outline-color: #e0409a; }
+
+/* kafelki w nagłówku O firmie */
+.theme-classic .tile--solid { background: linear-gradient(160deg, #330738, #0f0112); }
+.theme-classic a.tile--solid:hover .tile__label { color: #f7c6e3; }
+
+/* logo w nagłówku: stare logo jest szersze i niższe */
+.theme-classic .brand img { height: 2.6rem; }
+.theme-classic .footer__logo img { height: 2.6rem; }
+
+/* strona 404: przycisk "Kontakt" z obrysem na ciemnym tle */
+.theme-classic .page-hero .btn--outline { background: transparent; color: #fff; border: 2px solid #fff; }
+.theme-classic .page-hero .btn--outline:hover { background: #fff; color: var(--navy-900); }

@@ -9,7 +9,7 @@
 # Cross-Origin-Opener-Policy  okna otwarte z innych stron nie mają dostępu do tej strony
 # Strict-Transport-Security   przeglądarka łączy się z domeną zawsze przez HTTPS (przez rok)
 # Content-Security-Policy     lista dozwolonych źródeł: skrypty, style i obrazy tylko z tej domeny,
-#                             ramka tylko z Google (mapa zasięgu). Każdy obcy skrypt zostanie zablokowany.
+#                             żadnych ramek z innych stron. Każdy obcy skrypt zostanie zablokowany.
 #                             Po dodaniu zewnętrznej usługi (np. formularza) trzeba dopisać ją tutaj.
 #                             Wpis 'sha256-...' zezwala tylko na mały skrypt ze strony 404.html.
 #
@@ -22,7 +22,7 @@
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
   Cross-Origin-Opener-Policy: same-origin
   Strict-Transport-Security: max-age=31536000
-  Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self' 'sha256-g2ihobCtrKIneH0+7dje9OKlsqPJ3dxh+mreDmRVbMw='; frame-src https://www.google.com; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self' 'sha256-g2ihobCtrKIneH0+7dje9OKlsqPJ3dxh+mreDmRVbMw='; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
 
 /css/*
   Cache-Control: public, max-age=2592000

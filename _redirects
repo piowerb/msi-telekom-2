@@ -17,3 +17,17 @@
 /internet-ketrzyn/              /mapa-sieci/         301
 /feed                           /aktualnosci/        301
 /feed/                          /aktualnosci/        301
+# pozostałe adresy WordPressa: kategorie, tagi, autorzy, kanały RSS wpisów
+/category/*                     /aktualnosci/        301
+/tag/*                          /aktualnosci/        301
+/author/*                       /aktualnosci/        301
+/comments/feed                  /aktualnosci/        301
+/comments/feed/                 /aktualnosci/        301
+/:slug/feed                     /:slug/              301
+/:slug/feed/                    /:slug/              301
+# poprawiona literówka w adresie artykułu (swiatlodowych na swiatlowodowych)
+/jak-dzierzawa-wlokien-swiatlodowych-zmienia-biznes-na-warmii-i-mazurach   /jak-dzierzawa-wlokien-swiatlowodowych-zmienia-biznes-na-warmii-i-mazurach/  301
+/jak-dzierzawa-wlokien-swiatlodowych-zmienia-biznes-na-warmii-i-mazurach/  /jak-dzierzawa-wlokien-swiatlowodowych-zmienia-biznes-na-warmii-i-mazurach/  301
+# dawna wersja demo z dwiema kolorystykami: adresy z wersja-2 prowadzą do strony głównej wersji
+/wersja-2                       /                    301
+/wersja-2/*                     /:splat              301
