@@ -738,14 +738,6 @@ a.tile--solid:hover .tile__label { color: #9fd8ff; }
 /* podpisy miejscowości (obrys w kolorze tła dla czytelności) */
 .mz-lbl { fill: #fff; font-size: 14px; font-weight: 600; paint-order: stroke; stroke: var(--navy-950); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
 .mz-lbl--hub { font-size: 18px; font-weight: 700; }
-.mz-lbl--minor { font-size: 13.5px; font-weight: 500; fill: #f3e6ef; stroke-width: 2.6px; }
-/* tablet: mapa jest węższa, więc zostają tylko większe podpisy, powiększone */
-@media (min-width: 44.01rem) and (max-width: 64rem) {
-  .mz-lbl--minor { display: none; }
-  .mz-lbl { font-size: 18px; stroke-width: 3.5px; }
-  .mz-lbl--hub { font-size: 22px; }
-  .mz-reg { font-size: 18px; }
-}
 .mz-lbls--zoom { display: none; }
 
 /* po przybliżeniu okolic Olsztyna */
@@ -782,8 +774,9 @@ a.tile--solid:hover .tile__label { color: #9fd8ff; }
 /* telefon: mniej podpisów, większe punkty */
 @media (max-width: 44rem) {
   .mz-lbl { display: none; }
-  .mz-lbl--hub { display: inline; font-size: 44px; stroke-width: 7px; }
-  .mz-reg { display: none; } /* na telefonie nazwy województw zasłaniałyby punkty */
+  .mz-lbl--hub { display: inline; font-size: 40px; stroke-width: 7px; }
+  .mz-reg { font-size: 30px; }
+  .mz-reg:not(.mz-reg--main) { display: none; }
   .mz-sym { transform: scale(2.1); }
   .mz-pt.is-active .mz-sym { transform: scale(2.8); }
   .mz.is-zoomed .mz-lbl { display: inline; font-size: 5.6px; stroke-width: 1.2px; }
