@@ -9,7 +9,7 @@
    3. Podkreślenie w menu sekcji, którą właśnie widać (strona główna).
    4. Zapasowe obrazy, gdy plik się nie wczyta.
    5. Interaktywna mapa zasięgu (nazwy punktów, przybliżenie, lista miejscowości).
-   6. Sprawdzanie formularza kontaktowego.
+   6. Sprawdzanie i wysyłka formularza kontaktowego.
    ========================================================= */
 (function () {
   'use strict';
@@ -232,12 +232,29 @@
     });
   }
 
-  /* ---------- 6. Formularz kontaktowy (wersja demonstracyjna) ----------
+  /* ---------- 6. Formularz kontaktowy ----------
      Sprawdza pola przed wysłaniem i pokazuje komunikaty pod błędnymi polami.
-     Wiadomość nie jest jeszcze nigdzie wysyłana (patrz miejsce oznaczone DEMO niżej). */
+     Poprawny formularz wysyła do kontakt.php (katalog główny strony), a ten skrypt PHP wysyła
+     e-mail na biuro@msitelekom.pl. Na GitHub Pages PHP nie działa, więc tam pokazujemy tylko
+     informację o wersji demonstracyjnej. */
   var form = document.getElementById('contact-form');
   if (form) {
     var status = form.querySelector('.form__status');
+    var button = form.querySelector('button[type="submit"]');
+    var FALLBACK = ' Prosimy spróbować ponownie albo napisać na biuro@msitelekom.pl.';
+
+    // Komunikat pod formularzem: kind to is-info, is-ok albo is-error (kolory w CSS).
+    var say = function (kind, text) {
+      status.className = 'form__status ' + kind;
+      status.textContent = text;
+    };
+
+    // Po wysłaniu bez JavaScriptu kontakt.php wraca na stronę Kontakt z ?wyslano=1 albo ?blad=1.
+    if (/[?&]wyslano=1/.test(location.search)) {
+      say('is-ok', 'Dziękujemy, wiadomość została wysłana. Odpowiemy najszybciej, jak to możliwe.');
+    } else if (/[?&]blad=1/.test(location.search)) {
+      say('is-error', 'Nie udało się wysłać wiadomości.' + FALLBACK);
+    }
 
     // Pole kontaktowe przyjmuje adres e-mail albo numer telefonu (9 do 13 cyfr,
     // spacje, nawiasy, plus i myślniki są pomijane przy liczeniu cyfr).
@@ -291,9 +308,36 @@
       /* Pole-pułapka dla botów: jeśli wypełnione, nic nie robimy. */
       if (form.elements.website && form.elements.website.value) return;
 
-      /* DEMO: po wdrożeniu podłącz tu wysyłkę (skrypt PHP na serwerze lub usługa formularzy). */
-      status.className = 'form__status is-info';
-      status.textContent = 'Jest to wersja demonstracyjna, dlatego wiadomość nie została wysłana. Formularz zostanie połączony z serwerem podczas wdrożenia.';
+      /* Wersja demo na GitHub Pages (albo plik otwarty z dysku): bez PHP nic nie wysyłamy. */
+      if (/github\.io$/.test(location.hostname) || location.protocol === 'file:') {
+        say('is-info', 'Jest to wersja demonstracyjna, dlatego wiadomość nie została wysłana.');
+        return;
+      }
+
+      // Wysyłka w tle. Przycisk jest wyłączony do czasu odpowiedzi, żeby nie wysłać dwa razy.
+      button.disabled = true;
+      say('is-info', 'Wysyłanie wiadomości…');
+      fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'X-Requested-With': 'fetch' },
+        credentials: 'same-origin'
+      })
+        .then(function (r) {
+          return r.json().catch(function () { return {}; }).then(function (d) {
+            if (!r.ok || !d.ok) throw d;
+          });
+        })
+        .then(function () {
+          form.reset();
+          say('is-ok', 'Dziękujemy, wiadomość została wysłana. Odpowiemy najszybciej, jak to możliwe.');
+        })
+        .catch(function (d) {
+          say('is-error', d && d.blad === 'limit'
+            ? 'Z tego adresu wysłano już kilka wiadomości. Prosimy spróbować za godzinę albo napisać na biuro@msitelekom.pl.'
+            : 'Nie udało się wysłać wiadomości.' + FALLBACK);
+        })
+        .then(function () { button.disabled = false; });
     });
 
     // Komunikat znika od razu, gdy użytkownik poprawi pole.

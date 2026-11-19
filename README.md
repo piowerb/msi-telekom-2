@@ -23,21 +23,32 @@ Wyjątek: w adresie artykułu o dzierżawie włókien poprawiona została liter�
 - `_headers` (Cloudflare) i `.htaccess.example` (Apache) ustawiają nagłówki bezpieczeństwa: CSP, HSTS, ochronę przed osadzaniem strony w ramce i inne.
 - Strona nie pobiera niczego z zewnętrznych serwisów: mapa zasięgu jest jej częścią (rysunek SVG), bez Google i bez plików cookies.
 
-## Publikacja na Cloudflare Pages (zalecane)
+## Publikacja pod msitelekom.pl
 
-1. W panelu Cloudflare: **Workers & Pages**, utwórz projekt **Pages**.
-2. Połącz z repozytorium GitHub ze stroną albo wybierz wgranie folderu (Direct Upload).
-3. Ustawienia: bez frameworka, **bez polecenia build**, katalog wyjściowy: główny katalog repozytorium.
-4. Po wdrożeniu strona działa pod adresem `nazwa-projektu.pages.dev`. Pliki `_headers` i `_redirects` Cloudflare stosuje automatycznie.
+### Najszybciej: obecny serwer (tam, gdzie dziś działa WordPress)
 
-### Przed podpięciem domeny msitelekom.pl
+Ta droga nie wymaga zmian w DNS, więc poczta w domenie działa dalej bez żadnych zmian.
 
-To decyzja klienta i warto ją zaplanować z wyprzedzeniem:
+1. Zrób pełną kopię obecnej strony (pliki i baza WordPressa), żeby w razie potrzeby wrócić do niej w kilka minut.
+2. Przygotuj pliki: usuń z każdej strony linię `<meta name="robots" content="noindex, nofollow">` (opisana komentarzem „WERSJA DEMO”), zmień `robots.txt` na `Allow: /`, usuń katalog `wersja-2/`.
+3. Skopiuj `.htaccess.example` jako `.htaccess` (nagłówki bezpieczeństwa, strona 404, przekierowania starych adresów).
+4. Przenieś pliki WordPressa do katalogu z kopią poza katalogiem strony i wgraj w ich miejsce pliki tej strony (FTP lub menedżer plików w panelu hostingu).
+5. Sprawdź formularz kontaktowy: wyślij wiadomość ze strony głównej i z podstrony Kontakt, sprawdź, czy dotarła na biuro@msitelekom.pl i czy „Odpowiedz” trafia do nadawcy (opis niżej).
+6. Sprawdź skrzynki w domenie (biuro@, faktury@, noc@): wyślij i odbierz po jednej wiadomości.
+7. Gdy wszystko działa i HTTPS jest na całej domenie, odkomentuj w `.htaccess` linię `Strict-Transport-Security`.
 
-1. Usuń z każdej strony linię `<meta name="robots" content="noindex, nofollow">` (opisana komentarzem „WERSJA DEMO”) i zmień `robots.txt` na `Allow: /`.
-2. Przy przenoszeniu DNS domeny do Cloudflare **przenieś wszystkie rekordy, zwłaszcza MX, SPF i DKIM**. Bez nich przestanie działać poczta w domenie msitelekom.pl.
-3. Podepnij domenę w ustawieniach projektu Pages (Custom domains).
-4. Podłącz wysyłkę formularza kontaktowego (miejsce oznaczone `DEMO` w `js/main.js`), np. przez Cloudflare Pages Functions lub zewnętrzną usługę formularzy.
+### Formularz kontaktowy
+
+Formularz wysyła dane do `kontakt.php` w katalogu głównym strony, a ten skrypt wysyła e-mail na `biuro@msitelekom.pl` (ustawienia na początku pliku: odbiorca, nadawca, limit wiadomości). Wymaga PHP, które jest na obecnym serwerze. Wiadomości nie są zapisywane na serwerze.
+
+- Jeśli wiadomość nie dochodzi: sprawdź folder spam i w panelu hostingu, czy serwer może wysyłać pocztę jako `strona@msitelekom.pl` (rekord SPF domeny musi obejmować serwer strony). Gdy poczta domeny działa na innym serwerze niż strona, w panelu hostingu trzeba ustawić obsługę poczty jako zdalną (inaczej serwer strony próbuje dostarczyć wiadomość lokalnie).
+- Na GitHub Pages formularz tylko pokazuje komunikat o wersji demonstracyjnej.
+
+### Później, opcjonalnie: Cloudflare Pages
+
+1. W panelu Cloudflare: **Workers & Pages**, utwórz projekt **Pages**, połącz z repozytorium albo wgraj folder. Bez frameworka i bez polecenia build. Pliki `_headers` i `_redirects` Cloudflare stosuje automatycznie.
+2. Przy przenoszeniu DNS domeny do Cloudflare **przenieś wszystkie rekordy, zwłaszcza MX, SPF, DKIM i DMARC**, a rekordy poczty zostaw jako „DNS only” (szara chmurka). Bez nich przestanie działać poczta w domenie msitelekom.pl.
+3. Na Cloudflare Pages nie działa PHP, więc formularz trzeba wtedy przełączyć na inną wysyłkę (np. Pages Functions z usługą pocztową).
 
 ## Wersja demo na GitHub Pages
 
@@ -50,7 +61,7 @@ To decyzja klienta i warto ją zaplanować z wyprzedzeniem:
 - Teksty usług i wpisów to zredagowane, skrócone wersje treści ze starej strony, w formalnym stylu. Jeśli klient woli oryginały, wystarczy podmienić akapity.
 - Adresy e-mail opiekunów Klienta pochodzą z treści starej strony kontakt. Na starej stronie linki przy tych adresach prowadziły do innej skrzynki, więc warto potwierdzić, które adresy są aktualne.
 - Logotypy referencji pochodzą z dotychczasowej strony. Klient potwierdza zgody na ich użycie i aktualność listy (np. Multimedia Polska działa obecnie w ramach Vectry).
-- Polityka prywatności nie wspomina o formularzu kontaktowym.
+- Polityka prywatności ma nową sekcję „Formularz kontaktowy na stronie” (dane, cel, podstawa prawna, okres przechowywania). Klient potwierdza jej treść.
 - W polityce prywatności podmienione zostały nieaktualne linki (GIODO, Internet Explorer, stare strony pomocy przeglądarek). Sam tekst jest bez zmian, więc nadal powołuje się na ustawę Prawo telekomunikacyjne, którą zastąpiła ustawa Prawo komunikacji elektronicznej. Warto, żeby klient zaktualizował ten fragment.
 
 ## Kolorystyka
@@ -82,7 +93,7 @@ Kolory wersji wybranej przez klienta włącza klasa `theme-classic` na znaczniku
 | `index.html` | strona główna |
 | `nazwa-podstrony/index.html` | każda podstrona ma własny katalog, dzięki temu adresy są takie jak na starej stronie |
 | `css/style.css` | cały wygląd strony: kolory, układ, wersja na telefon. Na początku pliku jest spis jego części |
-| `js/main.js` | menu na telefonie, interaktywna mapa zasięgu, sprawdzanie formularza. Na początku pliku jest spis jego części |
+| `js/main.js` | menu na telefonie, interaktywna mapa zasięgu, sprawdzanie i wysyłka formularza. Na początku pliku jest spis jego części |
 | `assets/logo-stare.png`, `assets/favicon.png` | logo i ikona w karcie przeglądarki |
 | `assets/img/referencje/` | logotypy klientów w sekcji „Zaufali nam” i na stronie Referencje |
 | `wersja-2/` | tylko przekierowania ze starych linków wersji demo (można usunąć przed publikacją) |
@@ -90,6 +101,7 @@ Kolory wersji wybranej przez klienta włącza klasa `theme-classic` na znaczniku
 | `firma.html`, `referencje.html`, `polityka-prywatnosci.html` | przekierowania ze starych adresów wersji demo |
 | `_headers` | nagłówki bezpieczeństwa dla Cloudflare Pages (opis każdego nagłówka w komentarzach w pliku) |
 | `_redirects` | przekierowania starych adresów dla Cloudflare Pages |
+| `kontakt.php` | wysyłka formularza kontaktowego e-mailem na biuro@msitelekom.pl (działa na serwerze z PHP) |
 | `.htaccess.example` | to samo co `_headers` i `_redirects`, ale dla zwykłego hostingu z Apache |
 | `robots.txt` | informacja dla wyszukiwarek, czy mogą indeksować stronę |
 | `.nojekyll` | pusty plik, który mówi GitHub Pages, żeby publikował pliki bez przetwarzania |
@@ -98,4 +110,4 @@ W plikach HTML, CSS i JS są komentarze po polsku, które opisują poszczególne
 
 ## Edycja
 
-Każda podstrona to `nazwa/index.html`. Menu i stopka są powtórzone w każdym pliku, więc zmianę w nich trzeba wprowadzić we wszystkich stronach. Kolory są w `:root` na początku `css/style.css`. Po zmianie CSS lub JS podbij numer wersji `?v=13` w plikach HTML.
+Każda podstrona to `nazwa/index.html`. Menu i stopka są powtórzone w każdym pliku, więc zmianę w nich trzeba wprowadzić we wszystkich stronach. Kolory są w `:root` na początku `css/style.css`. Po zmianie CSS lub JS podbij numer wersji `?v=14` w plikach HTML.

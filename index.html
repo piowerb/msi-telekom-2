@@ -12,12 +12,12 @@
 <meta name="theme-color" content="#071C38">
 <link rel="icon" href="assets/favicon.png" type="image/png">
 <!-- Wygląd (CSS) i skrypt (JS) wspólne dla wszystkich podstron.
-     ?v=13 to numer wersji: po zmianie pliku CSS lub JS zwiększ go we wszystkich stronach,
+     ?v=14 to numer wersji: po zmianie pliku CSS lub JS zwiększ go we wszystkich stronach,
      wtedy przeglądarki pobiorą nowy plik zamiast starego z pamięci.
      Ścieżki zaczynające się od ../ prowadzą do głównego katalogu strony, dzięki temu
      strona działa także w podkatalogu (np. wersja demo na GitHub Pages). -->
-<link rel="stylesheet" href="css/style.css?v=13">
-<script src="js/main.js?v=13" defer></script>
+<link rel="stylesheet" href="css/style.css?v=14">
+<script src="js/main.js?v=14" defer></script>
 </head>
 <!-- Klasa na body wybiera motyw kolorystyczny (opis w README, część Wygląd) -->
 <body class="theme-classic">
@@ -511,7 +511,7 @@
         <p class="contact-more"><a class="more" href="kontakt/">Pełne dane kontaktowe <svg class="arrow" viewBox="0 0 44 12" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M1 6h41M36 1l6 5-6 5"/></svg></a></p>
       </div>
 
-      <form class="form" id="contact-form" novalidate>
+      <form class="form" id="contact-form" action="kontakt.php" method="post" novalidate>
         <div class="field">
           <label for="f-name">Imię i&nbsp;nazwisko</label>
           <input id="f-name" name="name" type="text" autocomplete="name" required aria-describedby="err-name">

@@ -788,6 +788,11 @@ a.tile--solid:hover .tile__label { color: #9fd8ff; }
 }
 @media (prefers-reduced-motion: reduce) { .mz-sym { transition: none; } }
 
+/* Formularz kontaktowy: komunikat po wysłaniu (is-ok) albo po błędzie (is-error), przycisk w trakcie wysyłki */
+.form__status.is-ok { color: var(--text); background: #e7f4ea; border-left: 3px solid #1e7a3c; padding: .7rem .9rem; }
+.form__status.is-error { color: var(--text); background: #fdecea; border-left: 3px solid var(--danger); padding: .7rem .9rem; }
+.form button[disabled] { opacity: .6; cursor: progress; }
+
 /* =========================================================
    WERSJA 2: kolorystyka dotychczasowej strony MSI Telekom
    (czarno-fioletowe tło, magentowe akcenty, stare logo).
